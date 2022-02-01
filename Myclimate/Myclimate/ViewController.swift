@@ -50,6 +50,10 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: WeatherManagerDelegate {
+    func didFailWithError(error: Error) {
+        <#code#>
+    }
+    
     func didUpdateWeather(_ weatherManager: WeatherManager, _ weatherModel: WeatherModel) {
         print(weatherModel.temperatureString)
     }
