@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreLocation
 
 class ViewController: UIViewController {
 
@@ -18,6 +19,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var locationButton: UIButton!
     
     var weatherManager = WeatherManager()
+    let locationManager = CLLocationManager()
     
     let weatherTitle = "🌈How is the weather?"
     let emptyText = ""
@@ -27,6 +29,13 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         textField.delegate = self
         weatherManager.delegate = self
+        locationManager.delegate = self
+        
+        
+        // Location Manager
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.requestLocation()
+        
         
         // Typing Animation
         titleLabel.text = ""
@@ -46,19 +55,40 @@ class ViewController: UIViewController {
         }
         
     }
+
+    @IBAction func locationTapped(_ sender: UIButton) {
+        locationManager.requestLocation()
+    }
     
+}
+
+extension ViewController: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.last {
+            locationManager.stopUpdatingLocation()
+            let lat = location.coordinate.latitude
+            let lon = location.coordinate.longitude
+            weatherManager.fetchWeather(latitude: lat, longitute: lon)
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print(error)
+    }
 }
 
 extension ViewController: WeatherManagerDelegate {
     func didFailWithError(error: Error) {
-        <#code#>
+        print(error)
     }
     
-    func didUpdateWeather(_ weatherManager: WeatherManager, _ weatherModel: WeatherModel) {
-        print(weatherModel.temperatureString)
+    func didUpdateWeather(_ weatherManager: WeatherManager, weather: WeatherModel) {
+        DispatchQueue.main.async {
+            self.temperatureLabel.text = weather.temperatureString
+            self.climateImg.image = UIImage(systemName: weather.conditionName)
+            self.cityNameLabel.text = weather.cityName
+        }
     }
-    
-
 }
 
 //MARK: -UITextField
@@ -79,7 +109,6 @@ extension ViewController: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         if let city = textField.text {
             weatherManager.fetchWeather(cityName: city)
-            cityNameLabel.text = city
         }
     }
 }

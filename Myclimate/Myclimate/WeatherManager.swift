@@ -6,9 +6,10 @@
 //
 
 import UIKit
+import CoreLocation
 
 protocol WeatherManagerDelegate {
-    func didUpdateWeather(_ weatherManager: WeatherManager, _ weatherModel: WeatherModel)
+    func didUpdateWeather(_ weatherManager: WeatherManager, weather: WeatherModel)
     func didFailWithError(error: Error)
 }
 
@@ -23,6 +24,11 @@ struct WeatherManager {
         //print(urlString)
     }
     
+    func fetchWeather(latitude: CLLocationDegrees, longitute: CLLocationDegrees) {
+        let urlString = "\(weatherUrl)&lat=\(latitude)&lon=\(longitute)"
+        performRequest(with: urlString)
+    }
+    
     func performRequest(with urlString: String) {
         if let url = URL(string: urlString) {
             let urlSession = URLSession(configuration: .default)
@@ -34,7 +40,7 @@ struct WeatherManager {
                 
                 if let safeData = data {
                     if let weather = self.parseJSON(safeData) {
-                        self.delegate?.didUpdateWeather(self, weather)
+                        self.delegate?.didUpdateWeather(self, weather: weather)
                         
                     }
                 }
