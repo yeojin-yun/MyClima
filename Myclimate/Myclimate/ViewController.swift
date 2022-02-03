@@ -21,7 +21,7 @@ class ViewController: UIViewController {
     var weatherManager = WeatherManager()
     let locationManager = CLLocationManager()
     
-    let weatherTitle = "🌈How is the weather?"
+    let weatherTitle = "🌈How's the weather?"
     let emptyText = ""
     var charIndex = 0.0
     
