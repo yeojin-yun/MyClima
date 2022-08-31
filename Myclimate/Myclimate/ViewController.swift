@@ -53,13 +53,11 @@ class ViewController: UIViewController {
         if let city = textField.text {
             weatherManager.fetchWeather(cityName: city)
         }
-        
     }
 
     @IBAction func locationTapped(_ sender: UIButton) {
         locationManager.requestLocation()
     }
-    
 }
 
 extension ViewController: CLLocationManagerDelegate {
